@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1b8c63">
+<title>医療情報 基礎知識トレーニング</title>
+<style>
+:root {
+  --green: #1b8c63;
+  --green-dark: #116746;
+  --mint: #e5f7ee;
+  --ink: #1e2d2a;
+  --muted: #667671;
+  --line: #d9e5df;
+  --paper: #ffffff;
+  --bg: #f4fbf7;
+  --gold: #f6b835;
+  --red: #df5a52;
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; color: var(--ink); background: radial-gradient(circle at top right, #d8f5e6, transparent 35rem), var(--bg); }
+button { font: inherit; cursor: pointer; }
+button:focus-visible, a:focus-visible { outline: 3px solid #1565c0; outline-offset: 3px; }
+.shell { width: min(900px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 52px; }
+.topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 28px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 800; color: var(--green-dark); letter-spacing: .02em; }
+.brand-mark { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 13px; color: #fff; background: var(--green); box-shadow: 0 5px 0 var(--green-dark); }
+.home-link { border: 0; background: transparent; color: var(--green-dark); font-weight: 700; padding: 8px; }
+.hero, .card { background: var(--paper); border: 1px solid rgba(15, 94, 63, .10); box-shadow: 0 12px 35px rgba(24, 77, 52, .08); border-radius: 24px; }
+.hero { padding: clamp(24px, 5vw, 42px); margin-bottom: 22px; }
+.eyebrow { color: var(--green); font-weight: 800; font-size: .83rem; letter-spacing: .08em; }
+h1 { margin: 8px 0 10px; font-size: clamp(1.8rem, 5vw, 3rem); line-height: 1.17; }
+h2 { margin: 4px 0 8px; font-size: clamp(1.35rem, 3vw, 1.85rem); }
+.lead, .subtle { color: var(--muted); line-height: 1.7; }
+.overview { display: flex; align-items: center; gap: 15px; margin-top: 24px; padding: 16px; background: var(--mint); border-radius: 16px; }
+.overview strong { display: block; font-size: 1.45rem; }
+.progress-wrap { flex: 1; }
+.progress-track { height: 12px; overflow: hidden; border-radius: 999px; background: #dcece3; }
+.progress-value { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #20ae7a, #55cf9d); transition: width .25s ease; }
+.group-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.group-card { position: relative; min-height: 150px; padding: 20px; text-align: left; border: 1px solid var(--line); border-radius: 20px; color: var(--ink); background: var(--paper); transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease; }
+.group-card:hover { transform: translateY(-3px); border-color: #8ed8b5; box-shadow: 0 10px 24px rgba(26, 118, 79, .11); }
+.group-card.complete { background: linear-gradient(145deg, #f2fff8, #fff); border-color: #8ed8b5; }
+.group-num { color: var(--green); font-weight: 900; font-size: .82rem; }
+.group-card h3 { margin: 8px 0; font-size: 1.1rem; }
+.group-card p { margin: 0; color: var(--muted); font-size: .92rem; }
+.done-badge { position: absolute; right: 15px; top: 15px; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; color: white; background: var(--green); font-weight: 900; }
+.study-card { padding: clamp(22px, 4vw, 38px); }
+.meta-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--muted); font-weight: 700; font-size: .9rem; }
+.question { margin: 28px 0 24px; font-size: clamp(1.3rem, 3.2vw, 1.75rem); line-height: 1.58; }
+.choice-list { display: grid; gap: 11px; }
+.choice { width: 100%; display: flex; align-items: flex-start; gap: 12px; text-align: left; padding: 15px 16px; color: var(--ink); background: #fff; border: 2px solid var(--line); border-radius: 15px; }
+.choice:not(:disabled):hover { border-color: #65c798; background: #f6fff9; }
+.choice:disabled { cursor: default; }
+.choice-index { flex: 0 0 28px; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 9px; color: var(--green-dark); background: var(--mint); font-weight: 900; }
+.choice.correct { border-color: var(--green); background: #e8faef; }
+.choice.correct .choice-index { color: white; background: var(--green); }
+.choice.incorrect { border-color: var(--red); background: #fff0ee; }
+.choice.incorrect .choice-index { color: white; background: var(--red); }
+.answer-box { margin-top: 20px; padding: 17px; border-left: 5px solid var(--green); border-radius: 0 14px 14px 0; background: var(--mint); line-height: 1.7; }
+.answer-box strong { color: var(--green-dark); }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 25px; }
+.primary, .secondary, .danger { border: 0; border-radius: 14px; padding: 14px 20px; font-weight: 800; }
+.primary { color: white; background: var(--green); box-shadow: 0 4px 0 var(--green-dark); }
+.primary:hover { background: #159267; }
+.secondary { color: var(--green-dark); background: var(--mint); }
+.danger { color: #a33f39; background: #fff0ee; }
+.quiz-note { margin: 18px 0 0; padding: 13px 15px; border-radius: 13px; color: #795400; background: #fff7dd; line-height: 1.55; }
+.result { margin-top: 20px; padding: 18px; border-radius: 16px; font-weight: 700; line-height: 1.65; }
+.result.ok { background: #e8faef; color: #135a3d; }
+.result.ng { background: #fff0ee; color: #9d3730; }
+.finish { text-align: center; padding: clamp(30px, 7vw, 62px) clamp(22px, 6vw, 70px); }
+.trophy { font-size: 4rem; }
+.finish h1 { margin-bottom: 8px; }
+.small { font-size: .88rem; color: var(--muted); }
+.footer-actions { display: flex; justify-content: center; margin-top: 20px; }
+@media (max-width: 620px) { .shell { width: min(100% - 24px, 900px); padding-top: 16px; } .group-grid { grid-template-columns: 1fr; } .hero { border-radius: 20px; } .topbar { margin-bottom: 18px; } .overview { align-items: flex-start; } }
+
+</style>
+</head>
+<body>
+<main id="app" aria-live="polite"></main>
+<script>
+(() => {
+const q = (id, prompt, choices, answer, explanation) => [id, { id, prompt, choices, answer, explanation }];
+
+const groups = [
+  { id: 'care', title: '医療制度・職種・ケア', range: '問1〜18', questionIds: Array.from({ length: 18 }, (_, i) => i + 1) },
+  { id: 'safety', title: '医療の質・安全・病院管理', range: '問19〜28', questionIds: Array.from({ length: 10 }, (_, i) => i + 19) },
+  { id: 'basic', title: '医療情報とコンピュータ基礎', range: '問29〜44', questionIds: Array.from({ length: 16 }, (_, i) => i + 29) },
+  { id: 'security', title: 'ネットワーク・DB・情報セキュリティ', range: '問45〜61', questionIds: Array.from({ length: 17 }, (_, i) => i + 45) },
+  { id: 'systems', title: '病院情報システム', range: '問62〜70', questionIds: Array.from({ length: 9 }, (_, i) => i + 62) },
+  { id: 'standards', title: '標準化・統計', range: '問71〜80', questionIds: Array.from({ length: 10 }, (_, i) => i + 71) },
+];
+
+const questions = Object.fromEntries([
+  q(1, '診療録の記載義務を規定しているのはどれか。', ['医師法', '介護保険法', '健康保険法', '療養担当規則'], 1, '診療録の記載義務は医師法に定められている。'),
+  q(2, '保健師助産師看護師法で定める重要な義務はどれか。', ['応召義務', '守秘義務', '勤務の義務', '納税の義務'], 2, '看護職には守秘義務が課される。'),
+  q(3, 'わが国の医療保険制度について正しいのはどれか。', ['原則として国民皆保険である。', '医療費は全額保険によって支払われる。', '診療報酬点数表は地域によって異なる。', '自己負担割合はすべての保険で共通である。'], 1, '日本は原則として国民皆保険制度である。'),
+  q(4, '医療法に基づき医療計画を策定する行政機関はどれか。', ['内閣府', '市区町村', '都道府県', '厚生労働省'], 3, '医療計画を策定するのは都道府県である。'),
+  q(5, '健康保険の診療報酬点数が1,000点のとき、診療報酬額はいくらか。', ['3,000円', '10,000円', '30,000円', '100,000円'], 2, '診療報酬は1点10円なので、1,000点は10,000円である。'),
+  q(6, 'リハビリテーションを実施する職種はどれか。', ['言語聴覚士', '臨床検査技師', '臨床工学技士', '診療情報管理士'], 1, '言語聴覚士はリハビリテーション専門職である。'),
+  q(7, '診断用の放射線を扱うことができない職種はどれか。', ['医師', '歯科医師', '救急救命士', '診療放射線技師'], 3, '救急救命士は診断用放射線を扱うことができない。'),
+  q(8, '介護を必要とせずに自立した生活ができる生存期間を指すのはどれか。', ['健康寿命', '最長寿命', '平均寿命', '平均余命'], 1, '健康寿命は健康上の制限なく生活できる期間である。'),
+  q(9, '生活習慣の改善を図るために法律に基づいて行う指導はどれか。', ['特定運動指導', '特定栄養指導', '特定共同指導', '特定保健指導'], 4, '生活習慣病予防のための制度は特定保健指導である。'),
+  q(10, '比較的軽症な患者を対象とする医療機関はどれか。', ['一次救急医療機関', '二次救急医療機関', '三次救急医療機関', '四次救急医療機関'], 1, '比較的軽症の救急患者は一次救急が担う。'),
+  q(11, '災害時医療において、傷病者を重症度と緊急度により選別する行為はどれか。', ['ソート', 'アウトカム', 'トリアージ', 'セイフティマネジメント'], 3, 'トリアージは治療の優先順位を決める選別である。'),
+  q(12, '事業継続計画を指すのはどれか。', ['BCP', 'BMI', 'BMP', 'BEEP'], 1, 'BCPはBusiness Continuity Plan、事業継続計画である。'),
+  q(13, '看護師がどのような形態で活動するのかを定めたのはどれか。', ['看護計画', '看護診断', '看護単位', '看護方式'], 4, '看護方式は看護師の活動・配置の形態を定める。'),
+  q(14, '医師の処方内容が適切であるかを薬剤師が確認することを指すのはどれか。', ['検体検査', '処方監査', '調剤監査', '服薬指導'], 2, '処方監査は処方内容を確認する行為である。'),
+  q(15, '照射線量が必要な検査はどれか。', ['X線CT検査', '脳波検査', '超音波検査', 'ホルター心電図検査'], 1, 'X線CTでは放射線を用いる。'),
+  q(16, '多職種による感染症管理チームを指すのはどれか。', ['AST', 'ICT', 'NST', 'RCT'], 2, 'ICTはInfection Control Teamである。'),
+  q(17, '患者に対する侵襲がない医療行為はどれか。', ['採血', '手術', '輸血', '尿検査'], 4, '尿を採取して調べる尿検査は身体への侵襲がない。'),
+  q(18, '病気や治療などについての医学的な見通しを指すのはどれか。', ['検査', '投薬', '問診', '予後'], 4, '予後は病気や治療の今後の見通しである。'),
+  q(19, 'バイタルサインの4徴候に含まれないのはどれか。', ['顔色', '血圧', '体温', '脈拍'], 1, '代表的なバイタルサインは体温・脈拍・呼吸・血圧である。'),
+  q(20, '医療施設における診療・ケアの質と安全性を定量的に評価するための指標はどれか。', ['病院会計準則', '病院機能評価', 'クリニカルパス', 'クリニカルインディケータ'], 4, 'クリニカルインディケータは医療の質を数値で示す指標である。'),
+  q(21, '病院の財務会計に含まれるのはどれか。', ['原価計算', '外来患者数', '損益計算書', '損益分岐点分析'], 3, '損益計算書は財務会計の基本書類である。'),
+  q(22, '病床数に対する在院患者数の割合を表すのはどれか。', ['病床回転率', '病床利用率', '入院患者数', '平均在院日数'], 2, '病床利用率は病床がどの程度使われているかを示す。'),
+  q(23, '4M4E分析のMに含まれないのはどれか。', ['Man', 'Media', 'Mental', 'Management'], 3, '4Mの例はMan・Machine・Material・Managementであり、Mentalは含まれない。'),
+  q(24, 'SHELLモデルのHにあたるのはどれか。', ['機器', '作業環境', '手順書', '教育プログラム'], 1, 'HはHardwareで、機器を指す。'),
+  q(25, '医療事故にあたらないのはどれか。', ['手術中の異物残置', '通院中の交通事故', '処置中の針刺し事故', '入院中の転倒による骨折'], 2, '通院中の交通事故は医療行為に起因する事故ではない。'),
+  q(26, 'ハインリッヒの法則において、1件の重大事故の背景にあるヒヤリハットの件数はどれか。', ['3件', '30件', '300件', '3,000件'], 3, 'ハインリッヒの法則は1:29:300として知られる。'),
+  q(27, '法定保存期間が最も長いのはどれか。', ['処方箋', '診療録', '放射線の照射録', '特定生物由来製品の使用記録'], 4, '特定生物由来製品の使用記録は特に長期の保存が必要である。'),
+  q(28, '患者が抱えている診療に関する問題点を箇条書きにしたのはどれか。', ['看護記録', '経過記録', 'プロブレムリスト', '退院時要約（サマリ）'], 3, 'プロブレムリストは患者の問題を一覧化する。'),
+  q(29, '医療情報の二次利用にあたるのはどれか。', ['他職種との情報共有', '民間療養保険の請求', '診療情報提供書の作成', '診療報酬明細書の発行'], 2, '保険請求は診療そのもの以外で情報を利用する二次利用の例である。'),
+  q(30, '診療情報の特性でないのはどれか。', ['複雑性', '公開性', '多層性', '時系列性'], 2, '診療情報には秘匿性が求められ、公開性ではない。'),
+  q(31, 'ターミナルケアの対象はどれか。', ['回復期の患者', '急性期の患者', '終末期の患者', '慢性期の患者'], 3, 'ターミナルケアは終末期の患者へのケアである。'),
+  q(32, '延命措置や蘇生措置の中止を求める生前の意思表示を指すのはどれか。', ['パターナリズム', 'リビングウィル', 'セカンドオピニオン', 'インフォームドコンセント'], 2, 'リビングウィルは終末期医療に関する生前の意思表示である。'),
+  q(33, '要配慮個人情報でないのはどれか。', ['病歴', '人種', '顔画像', '社会的身分'], 3, '顔画像は個人識別符号に関係するが、この選択肢では要配慮個人情報には分類されない。'),
+  q(34, '個人情報保護法のもとになったガイドラインはどれか。', ['診療ガイドライン', '感染症対策ガイドライン', 'OECDプライバシーガイドライン', '医療情報システムの安全管理に関するガイドライン'], 3, 'OECDプライバシーガイドラインが個人情報保護の国際的基盤である。'),
+  q(35, 'データをカンマで区切って並べたテキストのファイルはどれか。', ['CSV', 'GIF', 'PDF', 'PNG'], 1, 'CSVはComma-Separated Valuesの略である。'),
+  q(36, '40ビットは何バイトか。', ['4', '5', '8', '10'], 2, '1バイトは8ビットなので40÷8=5バイトである。'),
+  q(37, 'A/D変換において、連続的なアナログ値を一定の時間間隔で読み取る処理を指すのはどれか。', ['標準化', '標本化', '符号化', '量子化'], 2, '一定間隔で値を取り出す処理は標本化（サンプリング）である。'),
+  q(38, '文字コードの説明として適切なのはどれか。', ['文字や記号に割り当てられたバイナリデータ', 'テキストデータを圧縮するためのアルゴリズム', 'テキストデータを暗号化するためのアルゴリズム', '文字列をコンソール出力するためのプログラミングコード'], 1, '文字コードは文字と数値・ビット列の対応づけである。'),
+  q(39, '解像度が最も高いのはどれか。', ['4K', 'HD', 'VGA', 'Full-HD'], 1, '4KはFull-HDより高い解像度である。'),
+  q(40, 'ICタグに記録された情報を無線通信によって読み書きするのはどれか。', ['HDD', 'SSD', 'RFID', 'SSID'], 3, 'RFIDはICタグを無線で読み書きする技術である。'),
+  q(41, 'USB Type-Aコネクタはどれか。', ['図1', '図2', '図3', '図4'], 4, '図4の平たい長方形のコネクタがUSB Type-Aである。'),
+  q(42, '書き換えのできない記録媒体はどれか。', ['RAM', 'CD-ROM', 'DVD-RW', 'フラッシュメモリ'], 2, 'ROMは読み出し専用で、CD-ROMは書き換えできない。'),
+  q(43, '複数のHDDを用いて冗長性を持たせる技術はどれか。', ['RDB', 'VPN', 'HDMI', 'RAID'], 4, 'RAIDは複数ディスクで冗長化や性能向上を行う。'),
+  q(44, '左右に移動する印字ヘッドの穴からインクを噴射して紙に付着させる印刷方式はどれか。', ['3Dプリンタ', 'レーザプリンタ', 'インクジェットプリンタ', 'ドットインパクトプリンタ'], 3, '微細なインク滴を噴射するのがインクジェット方式である。'),
+  q(45, 'コンピュータの電源を切る操作はどれか。', ['ログイン', 'ログオン', 'シャットダウン', 'ドラッグ＆ドロップ'], 3, 'シャットダウンはOSを終了して電源を切る操作である。'),
+  q(46, 'Webページを表示するためのアプリケーションはどれか。', ['ブラウザ', 'ワープロソフト', 'デバイスドライバ', 'オペレーティングシステム'], 1, 'Webページの閲覧にはブラウザを用いる。'),
+  q(47, '携帯端末向けに開発されたOSはどれか。', ['Linux', 'Android', 'Windows', 'OS X（macOS）'], 2, 'Androidはスマートフォンなどの携帯端末向けOSである。'),
+  q(48, 'マークアップ言語はどれか。', ['QOL', 'SQL', 'SSL', 'XML'], 4, 'XMLはデータをタグで構造化するマークアップ言語である。'),
+  q(49, '無線通信の規格でないのはどれか。', ['WEP', 'Wi-Fi', 'WiMAX', 'Bluetooth'], 1, 'WEPは無線LANの暗号化方式であり、通信規格ではない。'),
+  q(50, 'クラウドコンピューティングが提供するサービスのうち、ユーザがネットワーク経由でアプリケーションを使用するのはどれか。', ['HaaS', 'IaaS', 'PaaS', 'SaaS'], 4, 'SaaSはSoftware as a Serviceで、ソフトをネット経由で使う。'),
+  q(51, 'ネットワーク機器の製造時に指定される固有の番号はどれか。', ['URL', 'ドメイン', 'IPアドレス', 'MACアドレス'], 4, 'MACアドレスはネットワーク機器に割り当てられる固有識別子である。'),
+  q(52, 'ネットワーク接続時にIPアドレスなどを自動で付与するためのプロトコルはどれか。', ['ASP', 'UDP', 'DHCP', 'HTTP'], 3, 'DHCPはIPアドレスなどの設定を自動配布する。'),
+  q(53, '電子メールにおいてメールサーバ上でメッセージの保存や管理をする方式はどれか。', ['DNS', 'SMTP', 'POP3', 'IMAP4'], 4, 'IMAP4はメールをサーバ上で管理できる。'),
+  q(54, '表形式データベースにおいてデータを格納した表を指すのはどれか。', ['ブック', 'ウォール', 'テーブル', 'ボックス'], 3, 'リレーショナルデータベースでは表をテーブルという。'),
+  q(55, '障害が発生したシステムを修復することを指すのはどれか。', ['改ざん', 'リカバリ', 'バックアップ', 'セキュリティパッチ'], 2, 'リカバリは障害後にシステムを復旧することをいう。'),
+  q(56, '診療や検査などのデータベースを管理運用するシステムはどれか。', ['DMZ', 'FTP', 'DBMS', 'ISMS'], 3, 'DBMSはDatabase Management Systemの略である。'),
+  q(57, 'ネットワークに接続されたコンピュータに過負荷をかけてサービスを妨害することを指すのはどれか。', ['DoS攻撃', 'スパムメール', 'パケット盗聴', 'フィッシング'], 1, 'DoS攻撃は過剰な負荷でサービス停止を狙う。'),
+  q(58, '公開鍵基盤（PKI）を指すのはどれか。', ['暗号化により通信の盗聴を防ぐための技術', 'HTTPSを使用して通信を保護するための仕組み', '外部ネットワークからの攻撃を防止するための技術', '公開鍵と秘密鍵を使用して通信の暗号化と認証を行うための仕組み'], 4, 'PKIは公開鍵暗号と証明書により暗号化・認証を支える。'),
+  q(59, '生体認証として使えるのはどれか。', ['共通鍵', 'トークン', '歩容（歩き方）', 'ワンタイムパスワード'], 3, '歩き方の特徴で本人を識別する歩容認証は生体認証である。'),
+  q(60, 'Webサーバのアクセスログに記録する必要性が低いのはどれか。', ['OS名', 'アクセス日時', 'サブネットマスク', 'アクセスしたページ'], 3, 'アクセス日時やページは重要だが、サブネットマスクの記録必要性は低い。'),
+  q(61, 'システムのユーザ登録作業で行うのはどれか。', ['利用ログの監査', 'アカウントの発行', '貸借対照表の作成', 'ファイルの暗号化'], 2, 'ユーザ登録では利用者アカウントを発行する。'),
+  q(62, 'パスワードとして最も適切なのはどれか。', ['admin', 'Ac34De9', '20191103', 'Hb@27cY3'], 4, '大文字・小文字・数字・記号を含む長い文字列が強い。'),
+  q(63, '医療現場で使用される物品を一括管理し、適切なタイミングで効率的に供給する仕組みはどれか。', ['EMR', 'LIS', 'SPD', 'PACS'], 3, 'SPDは院内物品を一元管理・供給する仕組みである。'),
+  q(64, 'RISの機能はどれか。', ['精度管理', '照射記録の管理', '血液製剤の管理', '病理検査オーダー'], 2, 'RISは放射線情報システムで、照射記録管理を行う。'),
+  q(65, '患者基本情報を利用しないシステムはどれか。', ['経営管理システム', '輸血部門システム', '放射線部門システム', 'オーダエントリシステム'], 1, '経営管理は集計中心で、個々の患者基本情報を主に利用しない。'),
+  q(66, 'DI業務を支援する機能を備えているのはどれか。', ['栄養部門システム', '看護部門システム', '診療予約システム', '薬剤部門システム'], 4, 'DI（医薬品情報）業務は薬剤部門システムが支援する。'),
+  q(67, '介護サービス計画の立案や介護記録の作成を支援するのはどれか。', ['医事会計システム', '検査予約システム', '病床管理システム', 'ケアマネジメント支援情報システム'], 4, 'ケアプランと介護記録はケアマネジメント支援情報システムの対象である。'),
+  q(68, '健診情報システムの機能でないのはどれか。', ['予約管理', '検査結果出力', 'レセプト作成', '面接指導記録管理'], 3, 'レセプト作成は医事会計の機能であり、健診情報システムの機能ではない。'),
+  q(69, '国民各人の生涯にわたる健康医療の記録を指すのはどれか。', ['P2P', 'PDA', 'PHR', 'PHS'], 3, 'PHRはPersonal Health Recordである。'),
+  q(70, '組織標本の顕微鏡画像を遠隔地の専門医が診断するのはどれか。', ['テレパソロジー', 'テレラジオロジー', 'テレサージェリー', 'テレコンサルテーション'], 1, 'テレパソロジーは遠隔病理診断である。'),
+  q(71, '医療情報システムの技術的な安全対策にあたるのはどれか。', ['ユーザ教育の実施', '守秘義務の契約締結', '運用管理規程の整備', 'データへのアクセス権の管理'], 4, 'アクセス権管理はシステム上の技術的安全管理措置である。'),
+  q(72, '電子保存の3原則のなかで、記録された情報が真正性を保ち、見読可能な状態で保存されることを指すのはどれか。', ['機密性', '信頼性', '保存性', '連続性'], 3, '保存性は必要な期間、見読可能な形で保存することをいう。'),
+  q(73, 'バーコードシンボルの標準化を行っている団体はどれか。', ['DSC', 'GS1', 'CDISC', 'HELICS'], 2, 'GS1は流通・バーコードの国際標準化団体である。'),
+  q(74, '医療現場で利用されるシステム間連携の標準化を推進している国際的な組織はどれか。', ['IHE', 'WHO', 'ANSI', 'JAHIS'], 1, 'IHEは医療情報システム間の相互運用性を推進する。'),
+  q(75, 'JLAC10で分類されているのはどれか。', ['医療行為', '標準病名', '手術・処置', '臨床検査項目'], 4, 'JLAC10は臨床検査項目の標準コードである。'),
+  q(76, '国際医療用語集はどれか。', ['ICD-10', 'ICD-9-CM', 'MEDIS-DC', 'SNOMED-CT'], 4, 'SNOMED CTは包括的な国際医療用語集である。'),
+  q(77, '順序尺度にあたるのはどれか。', ['年齢（歳）', '気温（摂氏）', '身長（センチメートル）', '評価（満足、普通、不満）'], 4, '満足・普通・不満は順序だけに意味がある順序尺度である。'),
+  q(78, '円グラフでの表現が適しているのはどれか。', ['がん死亡数の推移', '日本人の血液型の割合', 'バイタルサインの変化', '年度毎の医療法人数の推移'], 2, '円グラフは全体に対する構成比の表現に向く。'),
+  q(79, '基本統計量に含まれないのはどれか。', ['平均値', '中央値', '最頻値', '有意水準'], 4, '有意水準は統計的検定の基準であり、基本統計量ではない。'),
+  q(80, '平均身長172cm、標準偏差6cmに従う正規分布に近いヒストグラムはどれか。', ['図1', '図2', '図3', '図4'], 1, '図1は172cm付近を中心とした左右対称に近い単峰の分布である。'),
+]);
+
+globalThis.StudyData = { groups, questions };
+})();
+
+</script>
+<script>
+(() => {
+function createQuiz(questionIds) {
+  return {
+    queue: [...questionIds],
+    cursor: 0,
+    answered: 0,
+    wrongCount: 0,
+    complete: false,
+  };
+}
+
+function answerQuiz(state, questionId, selectedChoice, correctChoice) {
+  const correct = selectedChoice === correctChoice;
+  const queue = correct ? state.queue : [...state.queue, questionId];
+  const cursor = state.cursor + 1;
+
+  return {
+    correct,
+    state: {
+      ...state,
+      queue,
+      cursor,
+      answered: state.answered + 1,
+      wrongCount: state.wrongCount + (correct ? 0 : 1),
+      complete: cursor >= queue.length,
+    },
+  };
+}
+
+globalThis.QuizEngine = { createQuiz, answerQuiz };
+})();
+
+</script>
+<script>
+const { groups, questions } = globalThis.StudyData;
+const { answerQuiz, createQuiz } = globalThis.QuizEngine;
+
+const app = document.querySelector('#app');
+const storageKey = 'medical-info-cram-progress';
+let completed = loadCompleted();
+let view = { mode: 'home' };
+
+function loadCompleted() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(storageKey) || '[]');
+    return new Set(Array.isArray(saved) ? saved : []);
+  } catch { return new Set(); }
+}
+
+function saveCompleted() {
+  try { localStorage.setItem(storageKey, JSON.stringify([...completed])); } catch { /* 学習は継続する */ }
+}
+
+function shuffle(items) {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function shell(content, home = true) {
+  return `<section class="shell"><header class="topbar"><div class="brand"><span class="brand-mark">＋</span><span>医療情報トレーニング</span></div>${home ? '<button class="home-link" data-action="home">ホーム</button>' : ''}</header>${content}</section>`;
+}
+
+function progressBar(value) {
+  return `<div class="progress-track" aria-label="進捗"><span class="progress-value" style="width:${value}%"></span></div>`;
+}
+
+function renderHome() {
+  const percent = Math.round((completed.size / groups.length) * 100);
+  const cards = groups.map((group, index) => `<button class="group-card ${completed.has(group.id) ? 'complete' : ''}" data-group="${group.id}">
+    <span class="group-num">GROUP ${String(index + 1).padStart(2, '0')} · ${group.range}</span>
+    ${completed.has(group.id) ? '<span class="done-badge">✓</span>' : ''}
+    <h3>${group.title}</h3><p>暗記 → 確認テスト → 苦手を反復</p>
+  </button>`).join('');
+  app.innerHTML = shell(`<section class="hero"><span class="eyebrow">試験直前の反復学習</span><h1>覚える。選ぶ。<br>全問正解にする。</h1><p class="lead">問題を一問ずつ確認してから、4択テストへ。間違えた問題は、正解できるまでこのグループ内で何度でも出題されます。</p><div class="overview"><div><strong>${completed.size} / ${groups.length}</strong><span class="small">グループ完了</span></div><div class="progress-wrap">${progressBar(percent)}</div><strong>${percent}%</strong></div></section><section class="group-grid">${cards}</section><div class="footer-actions"><button class="danger" data-action="reset">進捗をリセット</button></div>` , false);
+  bindCommon();
+  document.querySelectorAll('[data-group]').forEach((button) => button.addEventListener('click', () => startStudy(button.dataset.group)));
+}
+
+function startStudy(groupId) { view = { mode: 'study', groupId, index: 0, studyAnswer: null }; renderStudy(); }
+
+function renderStudy() {
+  const group = groups.find((item) => item.id === view.groupId);
+  const questionId = group.questionIds[view.index];
+  const question = questions[questionId];
+  const percent = Math.round(((view.index + 1) / group.questionIds.length) * 100);
+  const choices = question.choices.map((choice, index) => {
+    const number = index + 1;
+    const resultClass = view.studyAnswer ? (number === question.answer ? 'correct' : number === view.studyAnswer.selected ? 'incorrect' : '') : '';
+    return `<button class="choice ${resultClass}" data-study-choice="${number}" ${view.studyAnswer ? 'disabled' : ''}><span class="choice-index">${number}</span><span>${choice}</span></button>`;
+  }).join('');
+  const isLast = view.index === group.questionIds.length - 1;
+  const action = view.studyAnswer ? `<button class="primary" data-action="study-next">${isLast ? '確認テストを始める' : '次へ →'}</button>` : '<span class="small">選択肢を一つ選んでください。</span>';
+  const feedback = view.studyAnswer ? `<div class="result ${view.studyAnswer.correct ? 'ok' : 'ng'}"><strong>${view.studyAnswer.correct ? '✓ 正解！' : '✕ 不正解'}</strong><br>正解：${question.answer}. ${question.choices[question.answer - 1]}<br>${question.explanation}</div>` : '';
+  app.innerHTML = shell(`<article class="card study-card"><div class="meta-row"><span>${group.title}</span><span>問 ${question.id} · ${view.index + 1}/${group.questionIds.length}</span></div>${progressBar(percent)}<h1 class="question">${question.prompt}</h1><div class="choice-list">${choices}</div>${feedback}<div class="actions">${action}<button class="secondary" data-action="home">あとで続ける</button></div></article>`);
+  bindCommon();
+  document.querySelectorAll('[data-study-choice]').forEach((button) => button.addEventListener('click', () => chooseStudyAnswer(Number(button.dataset.studyChoice))));
+  document.querySelector('[data-action="study-next"]')?.addEventListener('click', () => {
+    if (isLast) startQuiz(group.id); else { view.index += 1; view.studyAnswer = null; renderStudy(); }
+  });
+}
+
+function chooseStudyAnswer(selected) {
+  const group = groups.find((item) => item.id === view.groupId);
+  const question = questions[group.questionIds[view.index]];
+  view.studyAnswer = { selected, correct: selected === question.answer };
+  renderStudy();
+}
+
+function startQuiz(groupId) { const group = groups.find((item) => item.id === groupId); view = { mode: 'quiz', groupId, quiz: createQuiz(group.questionIds), feedback: null }; renderQuiz(); }
+
+function renderQuiz() {
+  const group = groups.find((item) => item.id === view.groupId);
+  if (view.quiz.complete && !view.feedback) { finishGroup(group); return; }
+  const feedback = view.feedback;
+  const questionId = feedback ? feedback.questionId : view.quiz.queue[view.quiz.cursor];
+  const question = questions[questionId];
+  const choices = question.choices.map((choice, index) => {
+    const number = index + 1;
+    const resultClass = feedback ? (number === question.answer ? 'correct' : number === feedback.selected ? 'incorrect' : '') : '';
+    return `<button class="choice ${resultClass}" data-choice="${number}" ${feedback ? 'disabled' : ''}><span class="choice-index">${number}</span><span>${choice}</span></button>`;
+  }).join('');
+  const answered = feedback ? view.quiz.cursor : view.quiz.cursor + 1;
+  const remaining = view.quiz.queue.length - view.quiz.cursor;
+  app.innerHTML = shell(`<article class="card study-card"><div class="meta-row"><span>確認テスト · ${group.title}</span><span>${answered}問目</span></div>${progressBar(Math.min(100, Math.round((view.quiz.cursor / view.quiz.queue.length) * 100)))}<p class="quiz-note">残り ${remaining} 問。間違えた問題は最後にもう一度出題されます。</p><h1 class="question">問 ${question.id}　${question.prompt}</h1><div class="choice-list">${choices}</div>${feedback ? `<div class="result ${feedback.correct ? 'ok' : 'ng'}"><strong>${feedback.correct ? '✓ 正解！' : '✕ もう一度挑戦！'}</strong><br>正解：${question.answer}. ${question.choices[question.answer - 1]}<br>${question.explanation}</div><div class="actions"><button class="primary" data-action="quiz-next">次の問題 →</button></div>` : ''}</article>`);
+  bindCommon();
+  document.querySelectorAll('[data-choice]').forEach((button) => button.addEventListener('click', () => chooseAnswer(Number(button.dataset.choice))));
+  document.querySelector('[data-action="quiz-next"]')?.addEventListener('click', () => { view.feedback = null; renderQuiz(); });
+}
+
+function chooseAnswer(selected) {
+  const question = questions[view.quiz.queue[view.quiz.cursor]];
+  const result = answerQuiz(view.quiz, question.id, selected, question.answer);
+  view.quiz = result.state;
+  view.feedback = { correct: result.correct, selected, questionId: question.id };
+  renderQuiz();
+}
+
+function finishGroup(group) {
+  completed.add(group.id); saveCompleted();
+  app.innerHTML = shell(`<article class="card finish"><div class="trophy">🏆</div><span class="eyebrow">GROUP CLEAR</span><h1>全問正解！</h1><p class="lead">「${group.title}」を完了しました。間違えた回数：${view.quiz.wrongCount}回</p><div class="actions"><button class="primary" data-action="home">次のグループへ</button><button class="secondary" data-action="retry">もう一度テストする</button></div></article>`);
+  bindCommon();
+  document.querySelector('[data-action="retry"]')?.addEventListener('click', () => startQuiz(group.id));
+}
+
+function bindCommon() {
+  document.querySelectorAll('[data-action="home"]').forEach((button) => button.addEventListener('click', renderHome));
+  document.querySelector('[data-action="reset"]')?.addEventListener('click', () => { completed = new Set(); saveCompleted(); renderHome(); });
+}
+
+renderHome();
+
+</script>
+</body>
+</html>
